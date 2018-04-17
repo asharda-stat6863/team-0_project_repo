@@ -369,3 +369,71 @@ proc sql;
             substr(CDS,8,7) ne "0000000"
     ;
 quit;
+
+
+* inspect columns of interest in cleaned versions of datasets;
+
+title "Inspect Percent_Eligible_Free_K12 in frpm1415";
+proc sql;
+    select
+         min(Percent_Eligible_Free_K12) as min
+        ,max(Percent_Eligible_Free_K12) as max
+        ,mean(Percent_Eligible_Free_K12) as max
+        ,median(Percent_Eligible_Free_K12) as max
+    from
+        frpm1415
+    ;
+quit;
+title;
+
+title "Inspect Percent_Eligible_Free_K12 in frpm1516";
+proc sql;
+    select
+         min(Percent_Eligible_Free_K12) as min
+        ,max(Percent_Eligible_Free_K12) as max
+        ,mean(Percent_Eligible_Free_K12) as max
+        ,median(Percent_Eligible_Free_K12) as max
+    from
+        frpm1516
+    ;
+quit;
+title;
+
+title "Inspect PCTGE1500, after converting to numeric values, in sat15";
+proc sql;
+    select
+         min(input(PCTGE1500,best12.)) as min
+        ,max(input(PCTGE1500,best12.)) as max
+        ,mean(input(PCTGE1500,best12.)) as max
+        ,median(input(PCTGE1500,best12.)) as max
+    from
+        sat15
+    ;
+quit;
+title;
+
+title "Inspect NUMTSTTAKR, after converting to numeric values, in sat15";
+proc sql;
+    select
+         input(NUMTSTTAKR,best12.) as Number_of_testers
+        ,count(*)
+    from
+        sat15
+    group by
+        calculated Number_of_testers
+    ;
+quit;
+title;
+
+title "Inspect TOTAL, after converting to numeric values, in gradaf15";
+proc sql;
+    select
+         input(TOTAL,best12.) as Number_of_course_completers
+        ,count(*)
+    from
+        gradaf15
+    group by
+        calculated Number_of_course_completers
+    ;
+quit;
+title;
