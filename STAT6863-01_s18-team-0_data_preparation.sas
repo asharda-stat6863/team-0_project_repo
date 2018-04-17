@@ -380,6 +380,7 @@ proc sql;
         ,max(Percent_Eligible_Free_K12) as max
         ,mean(Percent_Eligible_Free_K12) as max
         ,median(Percent_Eligible_Free_K12) as max
+        ,nmiss(Percent_Eligible_Free_K12) as missing
     from
         frpm1415
     ;
@@ -393,6 +394,7 @@ proc sql;
         ,max(Percent_Eligible_Free_K12) as max
         ,mean(Percent_Eligible_Free_K12) as max
         ,median(Percent_Eligible_Free_K12) as max
+        ,nmiss(Percent_Eligible_Free_K12) as missing
     from
         frpm1516
     ;
@@ -406,6 +408,7 @@ proc sql;
         ,max(input(PCTGE1500,best12.)) as max
         ,mean(input(PCTGE1500,best12.)) as max
         ,median(input(PCTGE1500,best12.)) as max
+        ,nmiss(input(PCTGE1500,best12.)) as missing
     from
         sat15
     ;
