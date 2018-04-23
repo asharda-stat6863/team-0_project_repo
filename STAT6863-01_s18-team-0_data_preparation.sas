@@ -120,6 +120,10 @@ https://github.com/stat6250/team-0_project2/blob/master/data/sat15-edited.xls?ra
 %let inputDataset4Type = XLS;
 
 
+* set global system options;
+options fullstimer;
+
+
 * load raw datasets over the wire, if they doesn't already exist;
 %macro loadDataIfNotAlreadyAvailable(dsn,url,filetype);
     %put &=dsn;
