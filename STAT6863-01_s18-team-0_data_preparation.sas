@@ -445,3 +445,84 @@ quit;
     quit;
     title;
     */
+
+
+* combine sat15 and gradaf15 horizontally using a data-step match-merge;
+* note: After running the data step and proc sort step below several times
+  and averaging the fullstimer output in the system log, they tend to take
+  about 0.04 seconds of combined "real time" to execute and a maximum of
+  about 1.8 MB of memory (1100 KB for the data step vs. 1800 KB for the
+  proc sort step) on the computer they were tested on;
+data sat_and_gradaf15_v1;
+    retain
+        CDS_Code
+        School
+        District
+        Number_of_SAT_Takers
+        Number_of_Course_Completers
+    ;
+    keep
+        CDS_Code
+        School
+        District
+        Number_of_SAT_Takers
+        Number_of_Course_Completers
+    ;
+    merge
+        gradaf15
+        sat15(
+            rename=(
+                CDS=CDS_Code
+                sname=School
+                dname=District
+            )
+        )
+    ;
+    by CDS_Code;
+
+    Number_of_SAT_Takers = input(NUMTSTTAKR, best12.);
+
+    Number_of_Course_Completers = input(TOTAL, best12.);
+
+run;
+proc sort data=sat_and_gradaf15_v1;
+    by CDS_Code;
+run;
+
+
+* combine sat15 and gradaf15 horizontally using proc sql;
+* note: After running the proc sql step below several times and averaging
+  the fullstimer output in the system log, they tend to take about 0.04
+  seconds of "real time" to execute and about 9 MB of memory on the computer
+  they were tested on. Consequently, the proc sql step appears to take roughly
+  the same amount of time to execute as the combined data step and proc sort
+  steps above, but to use roughly five times as much memory;
+* note to learners: Based upon these results, the proc sql step is preferable
+  if memory performance isn't critical. This is because less code is required,
+  so it's faster to write and verify correct output has been obtained;
+proc sql;
+    create table sat_and_gradaf15_v2 as
+        select
+             coalesce(A.CDS,B.CDS_Code) as CDS_Code
+            ,coalesce(A.sname,B.SCHOOL) as School
+            ,coalesce(A.dname,B.DISTRICT) as District
+            ,input(A.NUMTSTTAKR,best12.) as Number_of_SAT_Takers
+            ,input(B.TOTAL,best12.) as Number_of_Course_Completers
+        from
+            sat15 as A
+            full join
+            gradaf15 as B
+            on A.CDS=B.CDS_Code
+        order by
+            CDS_Code
+    ;
+quit;
+
+
+* verify that sat_and_gradaf15_v1 and sat_and_gradaf15_v2 are identical;
+proc compare
+        base=sat_and_gradaf15_v1
+        compare=sat_and_gradaf15_v2
+        novalues
+    ;
+run;
