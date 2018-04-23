@@ -70,3 +70,24 @@ gradaf15.
 Limitations: Values of NUMTSTTAKR and TOTAL equal to zero should be excluded
 from this analysis, since they are potentially missing data values
 ;
+
+proc sql outobs=10;
+    select
+         School
+        ,District
+        ,Number_of_SAT_Takers /* NUMTSTTAKR from sat15 */
+        ,Number_of_Course_Completers /* TOTAL from gradaf15 */
+        ,Number_of_SAT_Takers - Number_of_Course_Completers
+         AS Difference
+        ,(calculated Difference)/Number_of_Course_Completers
+         AS Percent_Difference format percent12.1
+    from
+        sat_and_gradaf15_v2
+    where
+        Number_of_SAT_Takers > 0
+        and
+        Number_of_Course_Completers > 0
+    order by
+        Difference desc
+    ;
+quit;
