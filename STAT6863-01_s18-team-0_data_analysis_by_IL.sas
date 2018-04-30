@@ -1,4 +1,3 @@
-
 *******************************************************************************;
 **************** 80-character banner for column width reference ***************;
 * (set window width to banner width to calibrate line length to 80 characters *;
@@ -7,9 +6,8 @@
 * set relative file import path to current directory (using standard SAS trick);
 X "cd ""%substr(%sysget(SAS_EXECFILEPATH),1,%eval(%length(%sysget(SAS_EXECFILEPATH))-%length(%sysget(SAS_EXECFILENAME))))""";
 
-
 * load external file that will generate final analytic file;
-%include '.\STAT6863-02_s18-team-0_project2_data_preparation';
+%include '.\STAT6863-01_s18-team-0_data_preparation.sas';
 
 
 *******************************************************************************;
