@@ -27,6 +27,36 @@ Limitations: Values of "Percent (%) Eligible Free (K-12)" equal to zero should
 be excluded from this analysis, since they are potentially missing data values 
 ;
 
+proc sql outobs=5;
+    select
+         School_Name
+        ,District_Name
+        ,sum(Percent_Eligible_FRPM_K12_1415)
+         AS Percent_Eligible_FRPM_K12_1415
+         format percent12.2
+        ,sum(Percent_Eligible_FRPM_K12_1516)
+         AS Percent_Eligible_FRPM_K12_1516
+         format percent12.2
+        ,(calculated Percent_Eligible_FRPM_K12_1516)
+         -
+         (calculated Percent_Eligible_FRPM_K12_1415)
+         AS Percentage_Point_Increase
+         format percent12.2
+    from
+        frpm1415_and_frpm1516_v2
+    group by
+         CDS_Code
+        ,School_Name
+        ,District_Name
+    having
+        calculated Percent_Eligible_FRPM_K12_1415 > 0
+        and
+        calculated Percent_Eligible_FRPM_K12_1516 > 0
+    order by
+        Percentage_Point_Increase desc
+    ;
+quit;
+
 
 *******************************************************************************;
 * Research Question Analysis Starting Point;
