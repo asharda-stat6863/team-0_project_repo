@@ -173,7 +173,7 @@ District_Code, and School_Code are intended to form a composite key;
 proc sql;
     /* check for duplicate unique id values; after executing this query, we
        see that frpm1415_raw_dups only has one row, which just happens to 
-       have all three elements of the componsite key missing, which we can
+       have all three elements of the composite key missing, which we can
        mitigate as part of eliminating rows having missing unique id component
        in the next query */
     create table frpm1415_raw_dups as
@@ -194,7 +194,7 @@ proc sql;
     /* remove rows with missing unique id components, or with unique ids that
        do not correspond to schools; after executing this query, the new
        dataset frpm1415 will have no duplicate/repeated unique id values,
-       and all unique id values will correspond to our experimenal units of
+       and all unique id values will correspond to our experimental units of
        interest, which are California Public K-12 schools; this means the 
        columns County_Code, District_Code, and School_Code in frpm1415 are 
        guaranteed to form a composite key */
@@ -241,7 +241,7 @@ proc sql;
     /* remove rows with missing unique id components, or with unique ids that
        do not correspond to schools; after executing this query, the new
        dataset frpm1516 will have no duplicate/repeated unique id values,
-       and all unique id values will correspond to our experimenal units of
+       and all unique id values will correspond to our experimental units of
        interest, which are California Public K-12 schools; this means the 
        columns County_Code, District_Code, and School_Code in frpm1516 are 
        guaranteed to form a composite key */
@@ -274,8 +274,8 @@ proc sql;
     /* note to learners: the query below uses an in-line view together with a
        left join (see Chapter 3 for definitions) to isolate all problematic
        rows within a single query; it would have been just as valid to use
-       mulitple queries, as above, but it's often convenient to use a single
-       query to create a table with speficic properties; in particular, in the
+       multiple queries, as above, but it's often convenient to use a single
+       query to create a table with specific properties; in particular, in the
        above two examples, we blindly eliminated rows having specific
        properties when creating frpm1415 and frpm1516, whereas the query below
        allows us to build a fit-for-purpose mitigation step with no guessing
@@ -309,7 +309,7 @@ proc sql;
     /* remove rows with primary keys that do not correspond to schools; after
        executing this query, the new dataset gradaf15 will have no
        duplicate/repeated unique id values, and all unique id values will
-       correspond to our experimenal units of interest, which are California
+       correspond to our experimental units of interest, which are California
        Public K-12 schools; this means the column CDS_Code in gradaf15 is 
        guaranteed to form a primary key */
     create table gradaf15 as
@@ -360,7 +360,7 @@ proc sql;
     /* remove rows with primary keys that do not correspond to schools; after
        executing this query, the new dataset gradaf15 will have no
        duplicate/repeated unique id values, and all unique id values will
-       correspond to our experimenal units of interest, which are California
+       correspond to our experimental units of interest, which are California
        Public K-12 schools; this means the column CDS in sat15 is guaranteed
        to form a primary key */
     create table sat15 as
