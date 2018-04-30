@@ -77,6 +77,46 @@ Limitations: Values of "Percent (%) Eligible Free (K-12)" equal to zero should
 be excluded from this analysis, since they are potentially missing data values,
 and missing values of PCTGE1500 should also be excluded
 ;
+* note to learners: Because the columns being compared in this research
+  question don't appear together in the horizontal or vertical combinations
+  created in the date-prep file, a "first pass" is made at finding a
+  correlation by comparing the five-number summaries of the variables
+  Percent_Eligible_FRPM_K12 and PCTGE1500 within each decile.
+;
+
+proc rank
+        groups=10
+        data=frpm1415
+        out=frpm1415_ranked
+    ;
+    var Percent_Eligible_FRPM_K12;
+    ranks Percent_Eligible_FRPM_K12_rank;
+run;
+proc means min q1 median q3 max data=frpm1415_ranked;
+    class Percent_Eligible_FRPM_K12_rank;
+    var Percent_Eligible_FRPM_K12;
+run;
+
+proc sql;
+    create table sat15_cleaned as
+        select
+            input(PCTGE1500, best12.) as PCTGE1500
+        from 
+            sat15
+    ;
+quit;
+proc rank
+        groups=10
+        data=sat15_cleaned
+        out=sat15_cleaned_and_ranked
+    ;
+    var PCTGE1500;
+    ranks PCTGE1500_rank;
+run;
+proc means min q1 median q3 max data=sat15_cleaned_and_ranked;
+    class PCTGE1500_rank;
+    var PCTGE1500;
+run;
 
 
 *******************************************************************************;
