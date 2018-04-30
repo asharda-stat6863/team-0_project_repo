@@ -173,7 +173,7 @@ District_Code, and School_Code are intended to form a composite key;
 proc sql;
     /* check for duplicate unique id values; after executing this query, we
        see that frpm1415_raw_dups only has one row, which just happens to 
-       have all three elements of the componsite key missing, which we can
+       have all three elements of the composite key missing, which we can
        mitigate as part of eliminating rows having missing unique id component
        in the next query */
     create table frpm1415_raw_dups as
@@ -194,7 +194,7 @@ proc sql;
     /* remove rows with missing unique id components, or with unique ids that
        do not correspond to schools; after executing this query, the new
        dataset frpm1415 will have no duplicate/repeated unique id values,
-       and all unique id values will correspond to our experimenal units of
+       and all unique id values will correspond to our experimental units of
        interest, which are California Public K-12 schools; this means the 
        columns County_Code, District_Code, and School_Code in frpm1415 are 
        guaranteed to form a composite key */
@@ -241,7 +241,7 @@ proc sql;
     /* remove rows with missing unique id components, or with unique ids that
        do not correspond to schools; after executing this query, the new
        dataset frpm1516 will have no duplicate/repeated unique id values,
-       and all unique id values will correspond to our experimenal units of
+       and all unique id values will correspond to our experimental units of
        interest, which are California Public K-12 schools; this means the 
        columns County_Code, District_Code, and School_Code in frpm1516 are 
        guaranteed to form a composite key */
@@ -274,8 +274,8 @@ proc sql;
     /* note to learners: the query below uses an in-line view together with a
        left join (see Chapter 3 for definitions) to isolate all problematic
        rows within a single query; it would have been just as valid to use
-       mulitple queries, as above, but it's often convenient to use a single
-       query to create a table with speficic properties; in particular, in the
+       multiple queries, as above, but it's often convenient to use a single
+       query to create a table with specific properties; in particular, in the
        above two examples, we blindly eliminated rows having specific
        properties when creating frpm1415 and frpm1516, whereas the query below
        allows us to build a fit-for-purpose mitigation step with no guessing
@@ -309,7 +309,7 @@ proc sql;
     /* remove rows with primary keys that do not correspond to schools; after
        executing this query, the new dataset gradaf15 will have no
        duplicate/repeated unique id values, and all unique id values will
-       correspond to our experimenal units of interest, which are California
+       correspond to our experimental units of interest, which are California
        Public K-12 schools; this means the column CDS_Code in gradaf15 is 
        guaranteed to form a primary key */
     create table gradaf15 as
@@ -360,7 +360,7 @@ proc sql;
     /* remove rows with primary keys that do not correspond to schools; after
        executing this query, the new dataset gradaf15 will have no
        duplicate/repeated unique id values, and all unique id values will
-       correspond to our experimenal units of interest, which are California
+       correspond to our experimental units of interest, which are California
        Public K-12 schools; this means the column CDS in sat15 is guaranteed
        to form a primary key */
     create table sat15 as
@@ -523,6 +523,149 @@ quit;
 proc compare
         base=sat_and_gradaf15_v1
         compare=sat_and_gradaf15_v2
+        novalues
+    ;
+run;
+
+
+* combine frpm1415 and frpm1516 vertically using a data-step interweave,
+  combining composite key values into a single primary key value;
+* note: After running the data step and proc sort step below several times
+  and averaging the fullstimer output in the system log, they tend to take
+  about 0.1 seconds of combined "real time" to execute and a maximum of
+  about 6 MB of memory (1200 KB for the data step vs. 6000 KB for the
+  proc sort step) on the computer they were tested on;
+data frpm1415_and_frpm1516_v1;
+    retain
+        Year
+        CDS_Code
+        School_Name
+        District_Name
+        Percent_Eligible_FRPM_K12_1415
+        Percent_Eligible_FRPM_K12_1516
+    ;
+    keep
+        Year
+        CDS_Code
+        School_Name
+        District_Name
+        Percent_Eligible_FRPM_K12_1415
+        Percent_Eligible_FRPM_K12_1516
+    ;
+    label
+        Percent_Eligible_FRPM_K12_1415=" "
+        Percent_Eligible_FRPM_K12_1516=" "
+    ;
+    length    
+        Year $9.
+        CDS_Code $14.
+        District_Name $75.
+    ;
+    set
+        frpm1516(
+            in = ay2015_data_row
+            rename = (
+                District_Name = District_Name_1516
+                Percent_Eligible_FRPM_K12 = Percent_Eligible_FRPM_K12_1516
+            )
+        )
+        frpm1415(
+            rename = (
+                District_Name = District_Name_1415
+                Percent_Eligible_FRPM_K12 = Percent_Eligible_FRPM_K12_1415
+            )
+        )
+    ;
+    by
+        County_Code
+        District_Code
+        School_Code
+    ;
+
+    CDS_Code = cats(County_Code,District_Code,School_Code);
+
+    if
+        ay2015_data_row=1
+    then
+        do;
+            Year = "AY2015-16";
+            District_Name = District_Name_1516;
+        end;
+    else
+        do;
+            Year = "AY2014-15";
+            District_Name = District_Name_1415;
+        end;
+run;
+proc sort data=frpm1415_and_frpm1516_v1;
+    by CDS_Code Year;
+run;
+
+
+* combine frpm1415 and frpm1516 vertically using proc sql;
+* note: After running the proc sql step below several times and averaging
+  the fullstimer output in the system log, they tend to take about 0.04
+  seconds of "real time" to execute and about 9 MB of memory on the computer
+  they were tested on. Consequently, the proc sql step appears to take roughly
+  half as much time to execute as the combined data step and proc sort steps
+  above, but to use slightly more memory;
+* note to learners: Based upon these results, the proc sql step is preferable
+  if memory performance isn't critical. This is because less code is required,
+  so it's faster to write and verify correct output has been obtained. In
+  addition, because proc sql doesn't create a PDV with the length of each
+  column determined by the column's first appearance, less care is needed for
+  issues like columns lengths being different in the input datasets. In
+  particular, the length of District_Name in frpm1516 is less than the length
+  of District_Name in frpm1415. This means a "drop and swap" must be used in
+  the data-step version in order to keep values of District_Name in frpm1415
+  from being truncated;
+proc sql;
+    create table frpm1415_and_frpm1516_v2 as
+        (
+            select
+                 "AY2014-15"
+                 AS
+                 Year
+                ,cats(County_Code,District_Code,School_Code)
+                 AS CDS_Code
+                 length 14
+                ,School_Name
+                ,District_Name
+                ,Percent_Eligible_FRPM_K12
+                 AS Percent_Eligible_FRPM_K12_1415
+                 label " "
+            from
+                frpm1415
+        )
+        outer union corr
+        (
+            select
+                 "AY2015-16"
+                 AS
+                 Year
+                ,cats(County_Code,District_Code,School_Code)
+                 AS CDS_Code
+                 length 14
+                ,School_Name
+                ,District_Name
+                ,Percent_Eligible_FRPM_K12
+                 AS Percent_Eligible_FRPM_K12_1516
+                 label " "
+            from
+                frpm1516
+        )
+        order by
+             CDS_Code
+            ,Year
+    ;
+quit;
+
+
+* verify that frpm1415_and_frpm1516_v1 and frpm1415_and_frpm1516_v2 are
+  identical;
+proc compare
+        base=frpm1415_and_frpm1516_v1
+        compare=frpm1415_and_frpm1516_v2
         novalues
     ;
 run;
