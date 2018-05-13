@@ -6,7 +6,8 @@
 * set relative file import path to current directory (using standard SAS trick);
 X "cd ""%substr(%sysget(SAS_EXECFILEPATH),1,%eval(%length(%sysget(SAS_EXECFILEPATH))-%length(%sysget(SAS_EXECFILENAME))))""";
 
-* load external file that will generate final analytic file;
+* load external file generating "analytic file" dataset cde_analytic_file, from
+  which all data analyses below begin;
 %include '.\STAT6863-01_s18-team-0_data_preparation.sas';
 
 
