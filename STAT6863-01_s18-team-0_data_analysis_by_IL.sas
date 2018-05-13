@@ -30,31 +30,19 @@ be excluded from this analysis, since they are potentially missing data values
 
 proc sql outobs=5;
     select
-         School_Name
-        ,District_Name
-        ,sum(Percent_Eligible_FRPM_K12_1415)
-         AS Percent_Eligible_FRPM_K12_1415
-         format percent12.2
-        ,sum(Percent_Eligible_FRPM_K12_1516)
-         AS Percent_Eligible_FRPM_K12_1516
-         format percent12.2
-        ,(calculated Percent_Eligible_FRPM_K12_1516)
-         -
-         (calculated Percent_Eligible_FRPM_K12_1415)
-         AS Percentage_Point_Increase
-         format percent12.2
+         School
+        ,District
+        ,Percent_Eligible_FRPM_K12_1415
+        ,Percent_Eligible_FRPM_K12_1516
+        ,FRPM_Percentage_Point_Increase
     from
-        frpm1415_and_frpm1516_v2
-    group by
-         CDS_Code
-        ,School_Name
-        ,District_Name
-    having
-        calculated Percent_Eligible_FRPM_K12_1415 > 0
+        cde_analytic_file
+    where
+        Percent_Eligible_FRPM_K12_1415 > 0
         and
-        calculated Percent_Eligible_FRPM_K12_1516 > 0
+        Percent_Eligible_FRPM_K12_1516 > 0
     order by
-        Percentage_Point_Increase desc
+        FRPM_Percentage_Point_Increase desc
     ;
 quit;
 
@@ -78,45 +66,39 @@ Limitations: Values of "Percent (%) Eligible Free (K-12)" equal to zero should
 be excluded from this analysis, since they are potentially missing data values,
 and missing values of PCTGE1500 should also be excluded
 ;
-* note to learners: Because the columns being compared in this research
-  question don't appear together in the horizontal or vertical combinations
-  created in the date-prep file, a "first pass" is made at finding a
-  correlation by comparing the five-number summaries of the variables
-  Percent_Eligible_FRPM_K12 and PCTGE1500 within each decile.
-;
 
 proc rank
         groups=10
-        data=frpm1415
-        out=frpm1415_ranked
+        data=cde_analytic_file
+        out=cde_analytic_file_ranked
     ;
-    var Percent_Eligible_FRPM_K12;
+    var Percent_Eligible_FRPM_K12_1415;
     ranks Percent_Eligible_FRPM_K12_rank;
 run;
-proc means min q1 median q3 max data=frpm1415_ranked;
-    class Percent_Eligible_FRPM_K12_rank;
-    var Percent_Eligible_FRPM_K12;
-run;
-
-proc sql;
-    create table sat15_cleaned as
-        select
-            input(PCTGE1500, best12.) as PCTGE1500
-        from 
-            sat15
-    ;
-quit;
 proc rank
         groups=10
-        data=sat15_cleaned
-        out=sat15_cleaned_and_ranked
+        data=cde_analytic_file_ranked
+        out=cde_analytic_file_ranked
     ;
-    var PCTGE1500;
-    ranks PCTGE1500_rank;
+    var Percent_with_SAT_above_1500;
+    ranks Percent_with_SAT_above_1500_rank;
 run;
-proc means min q1 median q3 max data=sat15_cleaned_and_ranked;
-    class PCTGE1500_rank;
-    var PCTGE1500;
+
+proc freq data=cde_analytic_file_ranked;
+    table
+          Percent_Eligible_FRPM_K12_rank
+        * Percent_with_SAT_above_1500_rank
+        / norow nocol nopercent
+    ;
+    label
+        Percent_Eligible_FRPM_K12_rank=" "
+        Percent_with_SAT_above_1500_rank=" "
+    ;
+    where
+        not(missing(Percent_Eligible_FRPM_K12_1415))
+        and
+        not(missing(Percent_with_SAT_above_1500))
+    ;
 run;
 
 
@@ -146,17 +128,15 @@ proc sql outobs=10;
         ,District
         ,Number_of_SAT_Takers /* NUMTSTTAKR from sat15 */
         ,Number_of_Course_Completers /* TOTAL from gradaf15 */
-        ,Number_of_SAT_Takers - Number_of_Course_Completers
-         AS Difference
-        ,(calculated Difference)/Number_of_Course_Completers
-         AS Percent_Difference format percent12.1
+        ,Course_Completers_Gap_Count
+        ,Course_Completers_Gap_Percent format percent12.1
     from
-        sat_and_gradaf15_v2
+        cde_analytic_file
     where
         Number_of_SAT_Takers > 0
         and
         Number_of_Course_Completers > 0
     order by
-        Difference desc
+        Course_Completers_Gap_Count desc
     ;
 quit;
