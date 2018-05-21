@@ -75,6 +75,20 @@ title2 justify=left
 'Rationale: This would help inform whether child-poverty levels are associated with college-preparedness rates, providing a strong indicator for the types of schools most in need of college-preparation outreach.'
 ;
 
+
+* 
+Note: This compares the column "Percent (%) Eligible Free (K-12)" from frpm1415
+to the column PCTGE1500 from sat15.
+
+Limitations: Values of "Percent (%) Eligible Free (K-12)" equal to zero should
+be excluded from this analysis, since they are potentially missing data values,
+and missing values of PCTGE1500 should also be excluded
+;
+
+title3 justify=left
+'Correlation analysis for Percent_Eligible_FRPM_K12_1415 and Percent_with_SAT_above_1500'
+;
+
 footnote1 justify=left
 "Assuming the variables Percent_Eligible_FRPM_K12_1415 and Percent_with_SAT_above_1500 are normally distributed, the above inferential analysis shows that there is a fairly strong negative correlation between student poverty and SAT scores in AY2014-15, with lower-poverty schools much more likely to have high proportions of students with combined SAT scores exceeding 1500."
 ;
@@ -87,15 +101,6 @@ footnote3 justify=left
 "Possible explanations for this correlation include child-poverty rates tending to be higher at schools with lower overall academic performance and quality of instruction. In addition, students in non-poverish conditions are more likely to have parents able to pay for SAT preparation."
 ;
 
-* 
-Note: This compares the column "Percent (%) Eligible Free (K-12)" from frpm1415
-to the column PCTGE1500 from sat15.
-
-Limitations: Values of "Percent (%) Eligible Free (K-12)" equal to zero should
-be excluded from this analysis, since they are potentially missing data values,
-and missing values of PCTGE1500 should also be excluded
-;
-
 proc corr data=cde_analytic_file;
     var
         Percent_Eligible_FRPM_K12_1415
@@ -105,6 +110,22 @@ proc corr data=cde_analytic_file;
         not(missing(Percent_Eligible_FRPM_K12_1415))
         and
         not(missing(Percent_with_SAT_above_1500))
+    ;
+run;
+
+
+title1
+'Plot illustrating the negative correlation between Percent_Eligible_FRPM_K12_1415 and Percent_with_SAT_above_1500'
+;
+
+footnote1
+"In the above plot, we can see how values of Percent_with_SAT_above_1500 tend to decrease as values of Percent_Eligible_FRPM_K12_1415 increase."
+;
+
+proc sgplot data=cde_analytic_file;
+    scatter
+        x=Percent_Eligible_FRPM_K12_1415
+        y=Percent_with_SAT_above_1500
     ;
 run;
 
