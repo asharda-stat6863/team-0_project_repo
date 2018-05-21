@@ -14,13 +14,28 @@ X "cd ""%substr(%sysget(SAS_EXECFILEPATH),1,%eval(%length(%sysget(SAS_EXECFILEPA
 *******************************************************************************;
 * Research Question Analysis Starting Point;
 *******************************************************************************;
-*
-Question: What are the top five schools that experienced the biggest increase
-in "Percent (%) Eligible Free (K-12)" between AY2014-15 and AY2015-16?
 
-Rationale: This should help identify schools to consider for new outreach based
-upon increasing child-poverty levels.
+title1 justify=left
+'Question: What are the top five California public K-12 schools experiencing the biggest increase in Free/Reduced-Price Meal Eligibility Rates between AY2014-15 and AY2015-16?'
+;
 
+title2 justify=left
+'Rationale: This should help identify schools to consider for new outreach based upon increasing child-poverty levels.'
+;
+
+footnote1 justify=left
+"Of the five schools with the greatest increases in percent eligible for free/reduced-price meals between AY2014-15 and AY2015-16, the percentage point increase ranges from about 67% to about 86%."
+;
+
+footnote2 justify=left
+"These are significant demographic shifts for a community to experience, so further investigation should be performed to ensure no data errors are involved."
+;
+
+footnote3 justify=left
+"However, assuming there are no data issues underlying this analysis, possible explanations for such large increases include changing CA demographics and recent loosening of the rules under which students qualify for free/reduced-price meals."
+;
+
+* 
 Note: This compares the column "Percent (%) Eligible Free (K-12)" from frpm1415
 to the column of the same name from frpm1516.
 
@@ -50,15 +65,30 @@ quit;
 *******************************************************************************;
 * Research Question Analysis Starting Point;
 *******************************************************************************;
-*
-Question: Can "Percent (%) Eligible FRPM (K-12)" be used to predict the
-proportion of high school graduates earning a combined score of at least 1500
-on the SAT?
 
-Rationale: This would help inform whether child-poverty levels are associated
-with college-preparedness rates, providing a strong indicator for the types of
-schools most in need of college-preparation outreach.
 
+title1 justify=left
+'Research Question: Can Free/Reduced-Price Meal Eligibility Rates be used to predict the proportion of high school graduates earning a combined score of at least 1500 on the SAT in AY2014 at California public K-12 schools?'
+;
+
+title2 justify=left
+'Rationale: This would help inform whether child-poverty levels are associated with college-preparedness rates, providing a strong indicator for the types of schools most in need of college-preparation outreach.'
+;
+
+footnote1 justify=left
+"As can be seen in this exploratory analysis, there is an extremely clear negative correlation between student poverty and SAT scores in AY2014-15, with lower-poverty schools much more likely to have high proportions of students with combined SAT scores exceeding 1500."
+;
+
+footnote2 justify=left
+"Possible explanations for this correlation include child-poverty rates tending to be higher at schools with lower overall academic performance and quality of instruction. In addition, students in non-poverish conditions are more likely to have parents able to pay for SAT preparation."
+;
+
+footnote3 justify=left
+"Given this apparent correlation based on descriptive methodology, further investigation should be performed using inferential methodology to determine the level of statistical significance of the result."
+;
+
+
+* 
 Note: This compares the column "Percent (%) Eligible Free (K-12)" from frpm1415
 to the column PCTGE1500 from sat15.
 
@@ -105,16 +135,28 @@ run;
 *******************************************************************************;
 * Research Question Analysis Starting Point;
 *******************************************************************************;
+
+title1 justify=left
+'Research Question: What are the top ten California public K-12 schools were the number of high school graduates taking the SAT exceeds the number of high school graduates completing UC/CSU entrance requirements?'
+;
+
+title2 justify=left
+"Rationale: This would help identify schools with significant gaps in preparation specific for California's two public university systems, suggesting where focused outreach on UC/CSU college-preparation might have the greatest impact."
+;
+
+footnote1 justify=left
+"All ten schools listed appear to have extremely large numbers of 12th-graders graduating who have completed the SAT but not the coursework needed to apply for the UC/CSU system, with differences ranging from 147 to 282."
+;
+
+footnote2 justify=left
+"These are significant gaps in college-preparation, with some of the percentages suggesting that schools have a college-going culture not aligned with UC/CSU-going. Given the magnitude of these numbers, further investigation should be performed to ensure no data errors are involved."
+;
+
+footnote3 justify=left
+"However, assuming there are no data issues underlying this analysis, possible explanations for such large numbers of 12th-graders completing only the SAT include lack of access to UC/CSU-preparatory coursework, as well as lack of proper counseling for students early enough in high school to complete all necessary coursework."
+;
+
 *
-Question: What are the top ten schools were the number of high school graduates
-taking the SAT exceeds the number of high school graduates completing UC/CSU
-entrance requirements?
-
-Rationale: This would help identify schools with significant gaps in
-preparation specific for California's two public university systems, suggesting
-where focused outreach on UC/CSU college-preparation might have the greatest
-impact.
-
 Note: This compares the column NUMTSTTAKR from sat15 to the column TOTAL from
 gradaf15.
 
