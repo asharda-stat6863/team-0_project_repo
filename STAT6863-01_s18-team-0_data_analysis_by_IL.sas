@@ -76,17 +76,16 @@ title2 justify=left
 ;
 
 footnote1 justify=left
-"As can be seen in this exploratory analysis, there is an extremely clear negative correlation between student poverty and SAT scores in AY2014-15, with lower-poverty schools much more likely to have high proportions of students with combined SAT scores exceeding 1500."
+"Assuming the variables Percent_Eligible_FRPM_K12_1415 and Percent_with_SAT_above_1500 are normally distributed, the above inferential analysis shows that there is a fairly strong negative correlation between student poverty and SAT scores in AY2014-15, with lower-poverty schools much more likely to have high proportions of students with combined SAT scores exceeding 1500."
 ;
 
 footnote2 justify=left
-"Possible explanations for this correlation include child-poverty rates tending to be higher at schools with lower overall academic performance and quality of instruction. In addition, students in non-poverish conditions are more likely to have parents able to pay for SAT preparation."
+"In particular, there is a statistically significant correlation with high confidence level since the p-value is less than 0.001, and the strength of the relationship between these variables is approximately -85%, on a scale of -100% to +100%."
 ;
 
 footnote3 justify=left
-"Given this apparent correlation based on descriptive methodology, further investigation should be performed using inferential methodology to determine the level of statistical significance of the result."
+"Possible explanations for this correlation include child-poverty rates tending to be higher at schools with lower overall academic performance and quality of instruction. In addition, students in non-poverish conditions are more likely to have parents able to pay for SAT preparation."
 ;
-
 
 * 
 Note: This compares the column "Percent (%) Eligible Free (K-12)" from frpm1415
@@ -97,32 +96,10 @@ be excluded from this analysis, since they are potentially missing data values,
 and missing values of PCTGE1500 should also be excluded
 ;
 
-proc rank
-        groups=10
-        data=cde_analytic_file
-        out=cde_analytic_file_ranked
-    ;
-    var Percent_Eligible_FRPM_K12_1415;
-    ranks Percent_Eligible_FRPM_K12_rank;
-run;
-proc rank
-        groups=10
-        data=cde_analytic_file_ranked
-        out=cde_analytic_file_ranked
-    ;
-    var Percent_with_SAT_above_1500;
-    ranks Percent_with_SAT_above_1500_rank;
-run;
-
-proc freq data=cde_analytic_file_ranked;
-    table
-          Percent_Eligible_FRPM_K12_rank
-        * Percent_with_SAT_above_1500_rank
-        / norow nocol nopercent
-    ;
-    label
-        Percent_Eligible_FRPM_K12_rank=" "
-        Percent_with_SAT_above_1500_rank=" "
+proc corr data=cde_analytic_file;
+    var
+        Percent_Eligible_FRPM_K12_1415
+        Percent_with_SAT_above_1500
     ;
     where
         not(missing(Percent_Eligible_FRPM_K12_1415))
