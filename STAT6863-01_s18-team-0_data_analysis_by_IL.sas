@@ -199,7 +199,7 @@ proc report data=cde_analytic_file_by_Gap_Count(obs=10);
         District
         Number_of_SAT_Takers /* NUMTSTTAKR from sat15 */
         Number_of_Course_Completers /* TOTAL from gradaf15 */
-        Course_Completers_Gap_Count
         Course_Completers_Gap_Percent
+        Course_Completers_Gap_Count
     ;
 run;
