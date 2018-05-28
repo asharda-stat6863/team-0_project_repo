@@ -172,21 +172,31 @@ Limitations: Values of NUMTSTTAKR and TOTAL equal to zero should be excluded
 from this analysis, since they are potentially missing data values
 ;
 
-proc sql outobs=10;
-    select
-         School
-        ,District
-        ,Number_of_SAT_Takers /* NUMTSTTAKR from sat15 */
-        ,Number_of_Course_Completers /* TOTAL from gradaf15 */
-        ,Course_Completers_Gap_Count
-        ,Course_Completers_Gap_Percent format percent12.1
-    from
-        cde_analytic_file
+* sort by difference between number of SAT takers and number of course
+completers, removing all schools with missing or invalid values for each;
+proc sort
+        data=cde_analytic_file
+        out=cde_analytic_file_by_Gap_Count
+    ;
+    by
+        descending Course_Completers_Gap_Count
+        School
+    ;
     where
         Number_of_SAT_Takers > 0
         and
         Number_of_Course_Completers > 0
-    order by
-        Course_Completers_Gap_Count desc
     ;
-quit;
+run;
+
+* output first five rows of resulting sorted data, addressing research question;
+proc report data=cde_analytic_file_by_Gap_Count(obs=10);
+    columns
+        School
+        District
+        Number_of_SAT_Takers /* NUMTSTTAKR from sat15 */
+        Number_of_Course_Completers /* TOTAL from gradaf15 */
+        Course_Completers_Gap_Count
+        Course_Completers_Gap_Percent
+    ;
+run;
