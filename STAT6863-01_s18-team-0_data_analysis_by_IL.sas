@@ -111,7 +111,10 @@ footnote3 justify=left
 "Possible explanations for this correlation include child-poverty rates tending to be higher at schools with lower overall academic performance and quality of instruction. In addition, students in non-poverish conditions are more likely to have parents able to pay for SAT preparation."
 ;
 
-proc corr data=cde_analytic_file;
+proc corr
+        data=cde_analytic_file
+        nosimple
+    ;
     var
         Percent_Eligible_FRPM_K12_1415
         Percent_with_SAT_above_1500
