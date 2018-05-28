@@ -71,6 +71,9 @@ proc report data=cde_analytic_file_by_FRPM_Incr(obs=5);
     ;
 run;
 
+* clear titles/footnotes;
+title;
+footnote;
 
 *******************************************************************************;
 * Research Question Analysis Starting Point;
@@ -126,6 +129,10 @@ proc corr
     ;
 run;
 
+* clear titles/footnotes;
+title;
+footnote;
+
 
 title1
 'Plot illustrating the negative correlation between Percent_Eligible_FRPM_K12_1415 and Percent_with_SAT_above_1500'
@@ -141,6 +148,10 @@ proc sgplot data=cde_analytic_file;
         y=Percent_with_SAT_above_1500
     ;
 run;
+
+* clear titles/footnotes;
+title;
+footnote;
 
 
 *******************************************************************************;
@@ -203,3 +214,7 @@ proc report data=cde_analytic_file_by_Gap_Count(obs=10);
         Course_Completers_Gap_Count
     ;
 run;
+
+* clear titles/footnotes;
+title;
+footnote;
